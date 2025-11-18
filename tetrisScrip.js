@@ -57,8 +57,8 @@ const blockColor = [
 
 // --- 3. 盤面（マス目）の生成 ---
 const gameBoard = document.getElementById('game-board');
-const board_width = 10;  // あなたの定義した名前（小文字）
-const board_height = 20; // あなたの定義した名前（小文字）
+const board_width = 10;
+const board_height = 20; 
 
 // 200個のマス目を作る
 for (let i = 0; i < board_width * board_height; i++) {
@@ -91,7 +91,6 @@ function draw() {
                 let targetY = currentY + y;
                 
                 // 座標を通し番号 (0~199) に変換
-                // ★ここを board_width に修正しました！
                 let index = targetX + (targetY * board_width);
                 
                 // 色を塗る
@@ -101,5 +100,30 @@ function draw() {
     }
 }
 
-// 実行！
+
 draw();
+// --- 6. ブロックを消す関数 (drawの逆) ---
+function undraw() {
+    for (let y = 0; y < currentTetro.length; y++) {
+        for (let x = 0; x < currentTetro[y].length; x++) {
+            if (currentTetro[y][x] === 1) {
+                let targetX = currentX + x;
+                let targetY = currentY + y;
+                let index = targetX + (targetY * board_width);
+                
+                // 色を空っぽにする（CSSの色に戻す）
+                cells[index].style.backgroundColor = '';
+            }
+        }
+    }
+}
+
+// --- 7. 自動落下のための関数 ---
+function moveDown() {
+    undraw();      // 1. まず古い場所を消す
+    currentY++;    // 2. 座標を下にずらす
+    draw();        // 3. 新しい場所に描く
+}
+
+// --- 8. タイマーセット (1000ミリ秒 = 1秒ごとに moveDown を実行) ---
+setInterval(moveDown, 1000);
