@@ -3,11 +3,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 export class View {
 
-    constructor(model) {
+    constructor() {
         this.COLS = 10;
         this.ROWS = 20;
         this.BLOCK_SIZE = 30;
-        this.model = model;
         // this.canvas = document.getElementById('game-canvas');
         // this.ctx = this.canvas.getContext('2d');
         // this.initCanvas();
