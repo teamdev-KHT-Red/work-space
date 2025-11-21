@@ -4,8 +4,7 @@ import { Controller } from './Controller.js';
 
 const init = () => {
     const model = new Model();
-    //ここはViewにmodelを渡すのでは
-    const view = new View(model);
+    const view = new View();
     model.addObserver(view);
     new Controller(model);
     model.startGame();

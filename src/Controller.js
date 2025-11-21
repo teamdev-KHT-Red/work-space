@@ -1,12 +1,26 @@
 export class Controller {
 
-    constructor(model) {
+    constructor(model, view) {
         this.model = model;
+        this.view = view;
         this.initializeEventListener();
+        this.initializeTitleScreen();
     }
 
     initializeEventListener() {
         document.addEventListener('keydown', this.handleKeyPress);
+    }
+
+    initializeTitleScreen() {
+        const startBtn = document.getElementById('start-btn');
+        if(startBtn){
+            startBtn.addEventListener('click', () => {
+                this.view.hideStartScreen();
+                this.view.showGameScreen();
+                // this.model.startGame();
+                window.focus();
+            });
+        }
     }
 
     handleKeyPress = (event) => {
