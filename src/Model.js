@@ -103,6 +103,22 @@ export class Model {
         const displayBoard = this.board.map(row => [...row]);
 
         if (this.currentPiece) {
+            const ghostY = this.getGhostY();
+
+            this.currentPiece.shape.forEach((row, y) => {
+                    row.forEach((value, x) => {
+                        if (value) {
+                            const boardY = ghostY + y;
+                            const boardX = this.currentPiece.x + x;
+                            if (boardY >= 0) {
+                                if (displayBoard[boardY][boardX] === 0) {
+                                    displayBoard[boardY][boardX] = 'grey'; 
+                                }
+                            }
+                        }
+                    });
+                });
+        
             this.currentPiece.shape.forEach((row, y) => {
                 row.forEach((value, x) => {
                     if (value) {
@@ -158,6 +174,17 @@ export class Model {
         }
     }
 
+    getGhostY() {
+        const originalY = this.currentPiece.y;
+        while (!this.checkCollision()) {
+            this.currentPiece.y++;
+        }
+        this.currentPiece.y--;
+        const ghostY = this.currentPiece.y;
+        this.currentPiece.y = originalY;
+        return ghostY;
+    }
+
     // テトリミノの移動メソッド
     moveDown() {
         this.currentPiece.y++;
@@ -209,6 +236,17 @@ export class Model {
                 }
             }
         }
+    }
+
+    hardDrop(){
+        while (!this.checkCollision()) {
+            this.currentPiece.y++;
+        }
+        this.currentPiece.y--;
+        this.mergePiece();
+        this.clearLines();
+        this.currentPiece = this.nextPiece;
+        this.nextPiece = this.createPiece();
     }
     // テトリミノの移動メソッド ここまで
 }

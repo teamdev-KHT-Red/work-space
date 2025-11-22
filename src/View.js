@@ -137,6 +137,10 @@ export class View {
 
     makeInstance(geometry, colorName, x, y){
         const material = new THREE.MeshPhongMaterial({ color: new THREE.Color(colorName) });
+        if(colorName == 'grey'){
+            material.transparent = true;
+            material.opacity = 0.8;
+        }
         const cube = new THREE.Mesh( geometry, material );
         this.scene.add(cube);
         cube.position.x = x;

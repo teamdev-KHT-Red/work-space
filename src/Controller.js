@@ -37,9 +37,9 @@ export class Controller {
             case 38:
                 this.model.rotate();
                 break;
-            // case 32:
-            //     this.model.hardDrop();
-            //     break;
+            case 32:
+                this.model.hardDrop();
+                break;
             // case 80:
             //     this.model.togglePause();
             //     break;
