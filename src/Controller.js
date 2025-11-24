@@ -23,8 +23,7 @@ export class Controller {
                 bgm.currentTime = 0;
                 bgm.play();
                 
-                //this.model.startGame();
-                window.focus();
+                this.model.startGame();
             });
         }
     }
