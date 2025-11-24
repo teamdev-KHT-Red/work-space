@@ -1,11 +1,9 @@
 export class View2D {
 
-    constructor(model) {
+    constructor() {
         this.COLS = 10;
         this.ROWS = 20;
         this.BLOCK_SIZE = 30;
-        this.model = model;
-
         
         this.canvas = document.getElementById('c');
         this.ctx = this.canvas.getContext('2d');
@@ -45,5 +43,22 @@ export class View2D {
         // 枠線を描く
         this.ctx.strokeStyle = 'black';
         this.ctx.strokeRect(px, py, this.BLOCK_SIZE, this.BLOCK_SIZE);
+    }
+
+    hideStartScreen(){
+        const titleScreen = document.getElementById('title-screen');
+        if(titleScreen){
+            titleScreen.classList.add('d-none');
+            titleScreen.classList.remove('d-flex');
+        }
+    }
+
+    showGameScreen(){
+        const gameScreen = document.getElementById('game-screen');
+        if(gameScreen){
+            gameScreen.classList.remove('d-none');
+            gameScreen.classList.add('d-flex');
+            window.focus();
+        }
     }
 }
