@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="./css/style.css">
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@v0.181.1/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@v0.181.1/examples/jsm/"
+            }
+        }
+    </script>
+    <title>Document</title>
+</head>
+
+<body>
+    
+    <!-- <div class="d-flex justify-content-center">
+        <div class="d-flex align-items-center vh-100">
+            <canvas id="game-canvas" width="300px" height="600px" class=""></canvas>
+        </div>
+    </div> -->
+    <canvas id="c"></canvas>
+     <!-- BGMの追加 -->
+    <audio src="audio/sample.mp3" id="bgm" loop></audio>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script type="module" src="./src/startPage.js"></script>
+</body>
+
+</html>
