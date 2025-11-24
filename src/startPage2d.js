@@ -9,4 +9,4 @@ const init = () => {
     new Controller(model, view);
 }
 
-window.addEventListener('load', init);indow.addEventListener('load', init);indow.addEventListener('load', init);
+window.addEventListener('load', init);

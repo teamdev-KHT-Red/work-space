@@ -1,3 +1,5 @@
+import { EVENTS } from "./events.js";
+
 export class View2D {
 
     constructor() {
@@ -7,14 +9,28 @@ export class View2D {
         
         this.canvas = document.getElementById('c');
         this.ctx = this.canvas.getContext('2d');
+        this.bgm = document.getElementById('bgm');
 
         // キャンバスのサイズを計算して設定 (300px x 600px)
         this.canvas.width = this.COLS * this.BLOCK_SIZE;
         this.canvas.height = this.ROWS * this.BLOCK_SIZE;
+
+        this.handlers = {
+            [EVENTS.UPDATE_BOARD]: (data) => this.draw(data),
+            [EVENTS.GAME_OVER]:        () => this.gameOver(),
+            [EVENTS.SCORE_CHANGED]:(data) => console.log(data),
+            [EVENTS.IS_PAUSED]:    (data) => this.isPaused(data),
+            [EVENTS.NEXT_PIECE]:   (data) => console.log(data),
+            [EVENTS.HOLD_PIECE]:   (data) => console.log(data)
+        };
     }
 
-    update(data){
-        this.draw(data);
+    update(event, data){
+        if (this.handlers[event]) {
+            this.handlers[event](data);
+        } else {
+            console.warn(`[${event}]は登録されていません。`);
+        }
     }
 
     draw(board){
@@ -45,6 +61,23 @@ export class View2D {
         this.ctx.strokeRect(px, py, this.BLOCK_SIZE, this.BLOCK_SIZE);
     }
 
+    // 仮のゲームオーバー処理
+    gameOver(){
+        // 音楽停止
+        this.bgm.pause();
+        this.bgm.currentTime = 0;
+        alert("GAME OVER");
+    }
+
+    //仮のポーズ処理
+    isPaused(isPaused){
+        if(isPaused){
+            this.bgm.pause();
+        } else {
+            this.bgm.play();
+        }
+    }
+
     hideStartScreen(){
         const titleScreen = document.getElementById('title-screen');
         if(titleScreen){
@@ -60,5 +93,9 @@ export class View2D {
             gameScreen.classList.add('d-flex');
             window.focus();
         }
+
+        // 音楽開始
+        this.bgm.currentTime = 0;
+        this.bgm.play();
     }
 }

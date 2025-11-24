@@ -1,6 +1,6 @@
-import { Model } from './Model.js';
+import { Model } from '../Model.js';
 import { View } from './View.js';
-import { Controller } from './Controller.js';
+import { Controller } from '../Controller.js';
 
 const init = () => {
     const model = new Model();

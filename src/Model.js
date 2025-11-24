@@ -1,3 +1,5 @@
+import { EVENTS } from "./events.js"
+
 export class Model {
 
     constructor() {
@@ -63,25 +65,22 @@ export class Model {
     }
 
     // Viewへのデータ送信
-    notify(data){
-        this.observers.forEach(observer => observer.update(data));
+    notify(event, data){
+        this.observers.forEach(observer => observer.update(event, data));
     }
 
     startGame(){
         this.currentPiece = this.createPiece();
         this.nextPiece = this.createPiece();
+        this.notify(EVENTS.NEXT_PIECE, this.nextPiece);
         this.gameOver = false;
         this.isPaused = false;
         this.score = 0;
         
+        
         if(!this.animationId){
             this.gameLoop();
         }
-        
-    //gameLoop呼び出しを書き換えている。上記のコードで呼ぶとgameLoopの最初で処理が止まるため。
-    //    if(this.animationId == null){
-    //     this.animationId = requestAnimationFrame(() => this.gameLoop());
-    //    }
     }
 
     // 再帰でループをし続ける
@@ -96,29 +95,10 @@ export class Model {
             this.dropStart = now;
         }
 
-        this.notify(this.getDisplayBoard());
+        this.notify(EVENTS.UPDATE_BOARD, this.getDisplayBoard());
 
         this.animationId = requestAnimationFrame(() => this.gameLoop());
     }
-    
-    //ゲームオーバーの処理。requestAnimationFrameを停止している。
-    showGameOver(){
-        cancelAnimationFrame(this.animationId);
-        this.animationId = null;
-
-        this.currentPiece = null;
-        this.nextPiece = null;
-        this.holdPiece = null;
-
-        //ゲームオーバーでBGM停止
-        const bgm = document.getElementById('bgm');
-        bgm.pause();
-        bgm.currentTime = 0;
-
-        alert("GAME OVER!!");
-    }
-
-
 
     createPiece(){
         const shapeIndex = Math.floor(Math.random() * this.SHAPES.length);
@@ -126,11 +106,18 @@ export class Model {
         const color = this.COLORS[shapeIndex];
         
         return {
+            typeId: shapeIndex,
             shape,
             color,
             x: Math.floor(this.COLS / 2) - Math.floor(shape[0].length / 2),
             y: 0
         };
+    }
+
+    spawnNextPiece() {
+        this.currentPiece = this.nextPiece;
+        this.nextPiece = this.createPiece();
+        this.notify(EVENTS.NEXT_PIECE, this.nextPiece);
     }
 
     // ミノの位置を取得して、ボードと結合したものを返す。
@@ -229,6 +216,7 @@ export class Model {
                 default: this.score += 800 + (lines - 4) * 200; 
                     break;               
             }
+            this.notify(EVENTS.SCORE_CHANGED, this.score);
         }
     }
 
@@ -251,14 +239,13 @@ export class Model {
             this.currentPiece.y--;
             this.mergePiece();
             this.clearLines();
-            this.currentPiece = this.nextPiece;
-            this.nextPiece = this.createPiece();
+            this.spawnNextPiece();
             this.canHold = true;//ホールドフラグをリセット
 
             //テトリミノがボードの頂点に到達した場合ゲームオーバーの実行
             if(this.currentPiece.y == 0 && this.checkCollision()) {
                 this.gameOver = true;
-                this.showGameOver();
+                this.notify(EVENTS.GAME_OVER, this.gameOver);
                 return;
             }
         }
@@ -311,8 +298,7 @@ export class Model {
         this.currentPiece.y--;
         this.mergePiece();
         this.clearLines();
-        this.currentPiece = this.nextPiece;
-        this.nextPiece = this.createPiece();
+        this.spawnNextPiece();
         this.canHold = true; //ホールドフラグをリセット
     }
     // テトリミノの移動メソッド ここまで   
@@ -320,11 +306,11 @@ export class Model {
     //ホールド処理
     holdCurrentPiece(){
         if(!this.canHold) return;
+        this.currentPiece.shape = this.SHAPES[this.currentPiece.typeId];
 
         if(!this.holdPiece) {
             this.holdPiece = this.currentPiece;
-            this.currentPiece = this.nextPiece;
-            this.nextPiece = this.createPiece();
+            this.spawnNextPiece();
         } else {
             const temp = this.currentPiece;
             this.currentPiece = this.holdPiece;
@@ -335,19 +321,8 @@ export class Model {
         }
 
         this.canHold = false;
+        this.notify(EVENTS.HOLD_PIECE, this.holdPiece);
     }
-
-    //ポーズ
-    // gamePausing() {
-    //     cancelAnimationFrame(this.animationId);
-    //     this.animationId = null;
-
-    //     const bgm = document.getElementById('bgm');
-    //     bgm.pause();
-        
-    //     console.log("Pause");
-    // }
-
 
     togglePause(){
         this.isPaused = !this.isPaused;
@@ -355,5 +330,6 @@ export class Model {
             this.dropStart = Date.now();
             this.gameLoop();
         }
+        this.notify(EVENTS.IS_PAUSED, this.isPaused);
     }
 }
