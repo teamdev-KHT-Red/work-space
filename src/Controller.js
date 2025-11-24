@@ -17,8 +17,7 @@ export class Controller {
             startBtn.addEventListener('click', () => {
                 this.view.hideStartScreen();
                 this.view.showGameScreen();
-                // this.model.startGame();
-                window.focus();
+                this.model.startGame();
             });
         }
     }
