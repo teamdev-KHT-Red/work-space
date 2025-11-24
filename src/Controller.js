@@ -17,12 +17,24 @@ export class Controller {
             startBtn.addEventListener('click', () => {
                 this.view.hideStartScreen();
                 this.view.showGameScreen();
+                
+                //スタートボタン入力で音楽開始。
+                const bgm = document.getElementById('bgm');
+                bgm.currentTime = 0;
+                bgm.play();
+                
                 this.model.startGame();
             });
         }
     }
 
     handleKeyPress = (event) => {
+        if (event.keyCode === 13) {
+            this.model.togglePause();
+            return;
+        }
+        if (this.model.gameOver || this.model.isPaused) return;
+
         switch (event.keyCode) {
             case 37:
                 this.model.moveLeft();
@@ -39,8 +51,29 @@ export class Controller {
             case 32:
                 this.model.hardDrop();
                 break;
-            // case 80:
-            //     this.model.togglePause();
+                
+            //ポーズ処理
+            case 13:
+                this.model.togglePause();
+                break;
+            
+            //ホールド処理
+            case 16:
+                this.model.holdCurrentPiece(); 
+                break;
+
+            //ポーズ処理
+            // case 13:
+            //     if(this.model.animationId === null){
+            //         this.model.animationId = requestAnimationFrame(() => this.model.gameLoop());
+                    
+            //         const bgm = document.getElementById('bgm');
+            //         bgm.play();
+
+            //         console.log("Resume");
+            //     }else{
+            //         this.model.gamePausing();    
+            //     }
             //     break;
         }
     }
