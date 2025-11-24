@@ -11,6 +11,9 @@ export class Model {
         this.dropStart = Date.now();
         this.dropInterval = 1000;
         this.animationId = null;
+        this.gameOver = false;
+        this.isPaused = false;
+
         this.SHAPES = [
             [
                 [0, 0, 0, 0],
@@ -67,26 +70,28 @@ export class Model {
     startGame(){
         this.currentPiece = this.createPiece();
         this.nextPiece = this.createPiece();
+        this.gameOver = false;
+        this.isPaused = false;
+        this.score = 0;
         
-        /**
         if(!this.animationId){
             this.gameLoop();
         }
-        **/
-       //gameLoop呼び出しを書き換えている。上記のコードで呼ぶとgameLoopの最初で処理が止まるため。
-       if(this.animationId == null){
-        this.animationId = requestAnimationFrame(() => this.gameLoop());
-       }
+        
+    //gameLoop呼び出しを書き換えている。上記のコードで呼ぶとgameLoopの最初で処理が止まるため。
+    //    if(this.animationId == null){
+    //     this.animationId = requestAnimationFrame(() => this.gameLoop());
+    //    }
     }
 
     // 再帰でループをし続ける
     gameLoop(){
-        if (this.animationId === null) return;//ゲームオーバー時の処理
+        if (this.gameOver || this.isPaused) return;
 
         const now = Date.now();
         const delta = now - this.dropStart;
         
-        if (delta > this.dropInterval) {    
+        if (delta > this.dropInterval) {
             this.moveDown();
             this.dropStart = now;
         }
@@ -97,7 +102,7 @@ export class Model {
     }
     
     //ゲームオーバーの処理。requestAnimationFrameを停止している。
-    gameOver(){
+    showGameOver(){
         cancelAnimationFrame(this.animationId);
         this.animationId = null;
 
@@ -110,7 +115,7 @@ export class Model {
         bgm.pause();
         bgm.currentTime = 0;
 
-        console.log("GAME OVER!!");
+        alert("GAME OVER!!");
     }
 
 
@@ -252,7 +257,8 @@ export class Model {
 
             //テトリミノがボードの頂点に到達した場合ゲームオーバーの実行
             if(this.currentPiece.y == 0 && this.checkCollision()) {
-                this.gameOver();
+                this.gameOver = true;
+                this.showGameOver();
                 return;
             }
         }
@@ -332,14 +338,22 @@ export class Model {
     }
 
     //ポーズ
-    gamePausing() {
-        cancelAnimationFrame(this.animationId);
-        this.animationId = null;
+    // gamePausing() {
+    //     cancelAnimationFrame(this.animationId);
+    //     this.animationId = null;
 
-        const bgm = document.getElementById('bgm');
-        bgm.pause();
+    //     const bgm = document.getElementById('bgm');
+    //     bgm.pause();
         
-        console.log("Pause");
-    }
+    //     console.log("Pause");
+    // }
 
+
+    togglePause(){
+        this.isPaused = !this.isPaused;
+        if(!this.isPaused){
+            this.dropStart = Date.now();
+            this.gameLoop();
+        }
+    }
 }
