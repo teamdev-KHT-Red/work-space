@@ -23,10 +23,8 @@
         
         <div class="w-100 d-flex justify-content-between align-items-center mb-3 px-3">
             <button id="btn-setting" class="btn btn-outline-secondary btn-sm text-white">設定</button>
-            
             <h2 class="m-0 text-white fw-bold" style="letter-spacing: 2px;">TETRIS</h2>
-            
-            <div style="width: 46px;"></div>
+            <button id="btn-pause" class="btn btn-outline-secondary btn-sm text-white"><i class="bi bi-pause-fill"></i> II</button>
         </div>
 
         <div class="row w-100 g-2">
@@ -78,22 +76,6 @@
                         <button id="btn-reset" class="btn btn-secondary">リセット</button>
                         <button id="btn-option-modal" class="btn btn-secondary">オプション</button>
                         <button id="btn-resume" class="btn btn-success">ゲームに戻る</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- ゲームオーバー画面のモーダル表示を追加しました。 -->
-    <div class="modal fade" id="gameOverModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark text-white border-danger"> <div class="modal-header border-secondary justify-content-center">
-                    <h5 class="modal-title fw-bold text-danger">GAME OVER</h5>
-                </div>
-                <div class="modal-body text-center">
-                    <p class="mb-4">お疲れ様でした！</p>
-                    <div class="d-grid gap-3">
-                        <button id="btn-retry" class="btn btn-success btn-lg">もう一度遊ぶ</button>
-                        <button id="btn-title-gameover" class="btn btn-secondary">タイトルに戻る</button>
                     </div>
                 </div>
             </div>

@@ -15,6 +15,7 @@ export class Model {
         this.animationId = null;
         this.gameOver = false;
         this.isPaused = false;
+        this.isGameRunning = false;
 
         this.SHAPES = [
             [
@@ -76,7 +77,7 @@ export class Model {
         this.gameOver = false;
         this.isPaused = false;
         this.score = 0;
-        
+        this.isGameRunning = true;
         
         if(!this.animationId){
             this.gameLoop();
@@ -246,6 +247,7 @@ export class Model {
             if(this.currentPiece.y == 0 && this.checkCollision()) {
                 this.gameOver = true;
                 this.notify(EVENTS.GAME_OVER, this.gameOver);
+                this.isGameRunning = false;
                 return;
             }
         }
