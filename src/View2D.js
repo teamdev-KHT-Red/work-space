@@ -2,16 +2,18 @@ import { EVENTS } from "./events.js";
 
 export class View2D {
 
-    constructor() {
+    constructor(model) {
         this.COLS = 10;
         this.ROWS = 20;
         this.BLOCK_SIZE = 30;
-        
+        this.model = model;
+
+        // HTML要素の取得
         this.canvas = document.getElementById('c');
         this.ctx = this.canvas.getContext('2d');
         this.bgm = document.getElementById('bgm');
 
-        // キャンバスのサイズを計算して設定 (300px x 600px)
+        // キャンバスサイズ設定
         this.canvas.width = this.COLS * this.BLOCK_SIZE;
         this.canvas.height = this.ROWS * this.BLOCK_SIZE;
 
@@ -22,10 +24,15 @@ export class View2D {
         this.nextCanvas = document.getElementById("nextCanvas");
         this.nextCtx = this.nextCanvas.getContext("2d");
 
+        // ★Bootstrapモーダルの初期化
+        // （index2d.htmlで読み込んでいるBootstrapの機能を使います）
+        this.pauseModal = new bootstrap.Modal(document.getElementById('pauseModal'));
+
+        // イベントハンドラーの登録
         this.handlers = {
             [EVENTS.UPDATE_BOARD]: (data) => this.draw(data),
-            [EVENTS.GAME_OVER]:        () => this.gameOver(),
-            [EVENTS.SCORE_CHANGED]:(data) => console.log(data),
+            [EVENTS.GAME_OVER]:    () => this.gameOver(),
+            [EVENTS.SCORE_CHANGED]:(data) => console.log("Score:", data), // ここでHTMLの#scoreを書き換えてもOK
             [EVENTS.IS_PAUSED]:    (data) => this.isPaused(data),
             
             //drawMini関数にてホールドとネクストのミニミノを描画
@@ -38,19 +45,19 @@ export class View2D {
         };
     }
 
+    // Modelからの通知受け取り窓口
     update(event, data){
         if (this.handlers[event]) {
             this.handlers[event](data);
-        } else {
-            console.warn(`[${event}]は登録されていません。`);
         }
     }
 
+    // 描画メソッド
     draw(board){
-        // 1. 画面を全消去（リセット）
+        // 全消去
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // 2. 配列をループしてブロックを描く
+        // ブロック描画
         board.forEach((row, y) => {
             row.forEach((color, x) => {
                 if (color) {
@@ -60,54 +67,55 @@ export class View2D {
         });
     }
 
-    // 1マスのブロックを描く処理
+    // 1ブロック描画
     drawBlock(x, y, color) {
         const px = x * this.BLOCK_SIZE;
         const py = y * this.BLOCK_SIZE;
 
-        // 色を塗る
         this.ctx.fillStyle = color;
         this.ctx.fillRect(px, py, this.BLOCK_SIZE, this.BLOCK_SIZE);
 
-        // 枠線を描く
         this.ctx.strokeStyle = 'black';
         this.ctx.strokeRect(px, py, this.BLOCK_SIZE, this.BLOCK_SIZE);
     }
 
-    // 仮のゲームオーバー処理
+    // ゲームオーバー処理
     gameOver(){
-        // 音楽停止
         this.bgm.pause();
         this.bgm.currentTime = 0;
-        alert("GAME OVER");
+        alert("GAME OVER"); // 仮のアラート
     }
 
-    //仮のポーズ処理
+    // ポーズ状態の切り替え（モーダル表示・BGM制御）
     isPaused(isPaused){
         if(isPaused){
             this.bgm.pause();
+            this.pauseModal.show(); // モーダルを開く
         } else {
             this.bgm.play();
+            this.pauseModal.hide(); // モーダルを閉じる
         }
     }
 
+    // --- 画面切り替え用メソッド ---
+
+    // スタート画面を隠す
     hideStartScreen(){
         const titleScreen = document.getElementById('title-screen');
         if(titleScreen){
             titleScreen.classList.add('d-none');
             titleScreen.classList.remove('d-flex');
-        }
+        }        
     }
 
+    // ゲーム画面を表示する
     showGameScreen(){
         const gameScreen = document.getElementById('game-screen');
         if(gameScreen){
             gameScreen.classList.remove('d-none');
             gameScreen.classList.add('d-flex');
-            window.focus();
         }
-
-        // 音楽開始
+        // BGM開始
         this.bgm.currentTime = 0;
         this.bgm.play();
     }
@@ -137,4 +145,27 @@ export class View2D {
         });
     }
 
+}
+    // タイトル画面に戻る（モーダルから呼ばれる）
+    showTitleScreen(){
+        const titleScreen = document.getElementById('title-screen');
+        const gameScreen = document.getElementById('game-screen');
+        
+        // モーダルを閉じる
+        this.pauseModal.hide();
+
+        // 画面を切り替える
+        if(gameScreen) {
+            gameScreen.classList.add('d-none');
+            gameScreen.classList.remove('d-flex');
+        }
+        if(titleScreen){
+            titleScreen.classList.remove('d-none');
+            titleScreen.classList.add('d-flex');
+        }
+        
+        // BGM停止
+        this.bgm.pause();
+        this.bgm.currentTime = 0;
+    }
 }
