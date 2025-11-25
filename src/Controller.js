@@ -23,25 +23,43 @@ export class Controller {
     }
 
     handleKeyPress = (event) => {
-        if (!this.model.isGameRunning) return;
-
-        const { code } = event;
-
-        if (code === 'Enter') {
+        if (event.keyCode === 13) {
             this.model.togglePause();
             return;
         }
+        if (this.model.gameOver || this.model.isPaused) return;
 
-        if (this.model.isPaused || this.model.gameOver) return;
-
-        switch (code) {
-            case 'ArrowLeft':  this.model.moveLeft();       break;
-            case 'ArrowRight': this.model.moveRight();      break;
-            case 'ArrowDown':  this.model.moveDown();       break;
-            case 'ArrowUp':    this.model.rotate();         break;
-            case 'Space':      this.model.hardDrop();       break;
-            case 'ShiftLeft':
-            case 'ShiftRight': this.model.holdCurrentPiece(); break;
+        switch (event.keyCode) {
+            // 左(ArrowLeft)
+            case 37:
+                this.model.moveLeft();
+                break;
+            // 右(ArrowRight)
+            case 39:
+                this.model.moveRight();
+                break;
+            // 下(ArrowDown)
+            case 40:
+                this.model.moveDown();
+                break;
+            // 回転(ArrowUp)
+            case 38:
+                this.model.rotate();
+                break;
+            // ハードドロップ(Space)
+            case 32:
+                this.model.hardDrop();
+                break;
+                
+            // ポーズ(Enter)
+            case 13:
+                this.model.togglePause();
+                break;
+            
+            // ホールド(Shift)
+            case 16:
+                this.model.holdCurrentPiece(); 
+                break;
         }
     }
 
