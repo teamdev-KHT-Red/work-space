@@ -17,6 +17,13 @@ export class View2D {
         this.canvas.width = this.COLS * this.BLOCK_SIZE;
         this.canvas.height = this.ROWS * this.BLOCK_SIZE;
 
+        //htmlのホールドとネクストミノ
+        this.holdCanvas = document.getElementById("holdCanvas");
+        this.holdCtx = this.holdCanvas.getContext("2d");
+
+        this.nextCanvas = document.getElementById("nextCanvas");
+        this.nextCtx = this.nextCanvas.getContext("2d");
+
         // ★Bootstrapモーダルの初期化
         // （index.htmlで読み込んでいるBootstrapの機能を使います）
         this.pauseModal = new bootstrap.Modal(document.getElementById('pauseModal'));
@@ -28,8 +35,14 @@ export class View2D {
             [EVENTS.GAME_OVER]:    () => this.gameOver(),
             [EVENTS.SCORE_CHANGED]:(data) => console.log("Score:", data), // ここでHTMLの#scoreを書き換えてもOK
             [EVENTS.IS_PAUSED]:    (data) => this.isPaused(data),
-            [EVENTS.NEXT_PIECE]:   (data) => console.log("Next:", data),
-            [EVENTS.HOLD_PIECE]:   (data) => console.log("Hold:", data)
+            
+            //drawMini関数にてホールドとネクストのミニミノを描画
+            [EVENTS.NEXT_PIECE]:   (data) => this.drawMini(this.nextCtx, data),
+            [EVENTS.HOLD_PIECE]:   (data) => this.drawMini(this.holdCtx, data)
+            /*
+            [EVENTS.NEXT_PIECE]:   (data) => console.log(data),
+            [EVENTS.HOLD_PIECE]:   (data) => console.log(data)
+            */
         };
     }
 
@@ -111,6 +124,30 @@ export class View2D {
         this.bgm.play();
     }
 
+    //ミニ枠にホールドとネクストピースの描画
+    drawMini(ctx, piece) {
+        if (!piece) return;
+
+        const size = 20; 
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+        const pieceWidth  = piece.shape[0].length * size;
+        const pieceHeight = piece.shape.length * size;
+        const offsetX = (ctx.canvas.width - pieceWidth) / 2;
+        const offsetY = (ctx.canvas.height - pieceHeight) / 2
+
+        piece.shape.forEach((row, y) => {
+            row.forEach((value, x) => {
+                if (value) {
+                    ctx.fillStyle = piece.color;
+                    ctx.fillRect(offsetX + x * size, offsetY + y * size, size, size);
+
+                    ctx.strokeStyle = "black";
+                    ctx.strokeRect(offsetX + x * size, offsetY + y * size, size, size);
+                }
+            });
+        });
+    }
     // タイトル画面に戻る（モーダルから呼ばれる）
     showTitleScreen(){
         const titleScreen = document.getElementById('title-screen');
