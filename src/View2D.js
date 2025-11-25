@@ -144,6 +144,8 @@ export class View2D {
             });
         });
     }
+
+}
     // タイトル画面に戻る（モーダルから呼ばれる）
     showTitleScreen(){
         const titleScreen = document.getElementById('title-screen');
