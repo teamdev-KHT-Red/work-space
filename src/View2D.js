@@ -25,9 +25,8 @@ export class View2D {
         this.nextCtx = this.nextCanvas.getContext("2d");
 
         // ★Bootstrapモーダルの初期化
-        // （index.htmlで読み込んでいるBootstrapの機能を使います）
+        // （index2d.htmlで読み込んでいるBootstrapの機能を使います）
         this.pauseModal = new bootstrap.Modal(document.getElementById('pauseModal'));
-        this.gameOverModal = new bootstrap.Modal(document.getElementById('gameOverModal'));
 
         // イベントハンドラーの登録
         this.handlers = {
@@ -82,12 +81,9 @@ export class View2D {
 
     // ゲームオーバー処理
     gameOver(){
-        // 音楽停止
         this.bgm.pause();
         this.bgm.currentTime = 0;
-        
-        // アラートの代わりにモーダルを表示！
-        this.gameOverModal.show();
+        alert("GAME OVER"); // 仮のアラート
     }
 
     // ポーズ状態の切り替え（モーダル表示・BGM制御）
