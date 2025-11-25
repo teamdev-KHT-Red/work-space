@@ -81,7 +81,21 @@
             </div>
         </div>
     </div>
-
+    <div class="modal fade" id="gameOverModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white border-danger"> <div class="modal-header border-secondary justify-content-center">
+                    <h5 class="modal-title fw-bold text-danger">GAME OVER</h5>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="mb-4">お疲れ様でした！</p>
+                    <div class="d-grid gap-3">
+                        <button id="btn-retry" class="btn btn-success btn-lg">もう一度遊ぶ</button>
+                        <button id="btn-title-gameover" class="btn btn-secondary">タイトルに戻る</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <audio src="audio/sample.mp3" id="bgm" loop></audio>
 
