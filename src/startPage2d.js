@@ -6,7 +6,7 @@ const init = () => {
     const model = new Model();
     const view = new View2D();
     model.addObserver(view);
-    new Controller(model, view);
+    new Controller(model);
 }
 
 window.addEventListener('load', init);
