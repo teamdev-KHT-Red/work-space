@@ -2,9 +2,8 @@ import { EVENTS, GAME_STATES } from "./events.js"
 
 export class Controller {
 
-    constructor(model, view) {
+    constructor(model) {
         this.model = model;
-        this.view = view;
         this.initializeEventListener();
     }
 

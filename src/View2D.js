@@ -2,11 +2,10 @@ import { EVENTS, GAME_STATES } from "./events.js";
 
 export class View2D {
 
-    constructor(model) {
+    constructor() {
         this.COLS = 10;
         this.ROWS = 20;
         this.BLOCK_SIZE = 30;
-        this.model = model;
 
         // HTML要素の取得
         this.canvas = document.getElementById('c');
