@@ -1,3 +1,49 @@
+/* body全体のスタイル */
 body {
-    overflow: hidden;
+    background-color: #111827; /* 背景色：ダークネイビー */
+    color: white;              /* 文字色：白 */
+    font-family: sans-serif;   /* フォント */
+}
+
+/* TETRISタイトルのスタイル */
+.game-title {
+    font-size: 4rem;
+    font-weight: 500;
+    margin-bottom: 3rem;
+    letter-spacing: 2px;
+}
+
+/* ボタンの共通スタイル */
+.menu-btn {
+    width: 100%;
+    max-width: 400px; /* PCでも幅が広がりすぎないように制限 */
+    padding: 12px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 8px;     /* 角丸 */
+    cursor: pointer;        /* マウスを乗せた時に指マークにする */
+    transition: opacity 0.2s;
+}
+
+/* マウスが乗った時のアニメーション */
+.menu-btn:hover {
+    opacity: 0.9;
+}
+
+/* スタートボタン専用の色（緑） */
+.btn-start {
+    background-color: #00a86b;
+    color: white;
+}
+
+/* オプションボタン専用の色（グレー青） */
+.btn-option {
+    background-color: #374151;
+    color: white;
+}
+
+canvas {
+    max-width: 100%;
+    height: auto;
+    display: block;
 }

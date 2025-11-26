@@ -1,4 +1,4 @@
-import { EVENTS } from "./events.js"
+import { EVENTS, GAME_STATES } from "./events.js"
 
 export class Model {
 
@@ -13,9 +13,7 @@ export class Model {
         this.dropStart = Date.now();
         this.dropInterval = 1000;
         this.animationId = null;
-        this.gameOver = false;
-        this.isPaused = false;
-        this.isGameRunning = false;
+        this.state = GAME_STATES.TITLE;
 
         this.SHAPES = [
             [
@@ -70,23 +68,70 @@ export class Model {
         this.observers.forEach(observer => observer.update(event, data));
     }
 
-    startGame(){
-        this.currentPiece = this.createPiece();
-        this.nextPiece = this.createPiece();
-        this.notify(EVENTS.NEXT_PIECE, this.nextPiece);
-        this.gameOver = false;
-        this.isPaused = false;
-        this.score = 0;
-        this.isGameRunning = true;
-        
-        if(!this.animationId){
+    setState(newState, options = {}) {
+        this.state = newState;
+        this.notify(EVENTS.STATE_CHANGED, { 
+            state: this.state, 
+            options: options 
+        });
+    }
+
+    startGame() {
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+            this.animationId = null;
+        }
+        this.resetGameData(); 
+        this.setState(GAME_STATES.PLAYING, { resetMusic: true }); 
+        this.gameLoop();
+    }
+
+    pauseGame() {
+        if (this.state === GAME_STATES.PLAYING) {
+            if (this.animationId) {
+                cancelAnimationFrame(this.animationId);
+                this.animationId = null;
+            }
+            this.setState(GAME_STATES.PAUSED);
+        }
+    }
+
+    resumeGame() {
+        if (this.state === GAME_STATES.PAUSED) {
+            this.setState(GAME_STATES.PLAYING, { resetMusic: false });
+            this.dropStart = Date.now();
             this.gameLoop();
         }
     }
 
+    quitToTitle() {
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+            this.animationId = null;
+        }
+        this.setState(GAME_STATES.TITLE);
+    }
+
+    resetGameData() {
+        this.board = Array.from({ length: this.ROWS }, () => Array(this.COLS).fill(0));
+        this.score = 0;
+        this.currentPiece = this.createPiece();
+        
+        this.nextPiece = this.createPiece();
+        this.holdPiece = null;
+        
+        this.canHold = true;
+        this.dropInterval = 1000;
+        this.gameOver = false;
+
+        this.notify(EVENTS.SCORE_CHANGED, this.score);
+        this.notify(EVENTS.NEXT_PIECE, this.nextPiece);
+        this.notify(EVENTS.HOLD_PIECE, this.holdPiece);
+    }
+
     // 再帰でループをし続ける
     gameLoop(){
-        if (this.gameOver || this.isPaused) return;
+        if (this.state !== GAME_STATES.PLAYING) return;
 
         const now = Date.now();
         const delta = now - this.dropStart;
@@ -245,9 +290,7 @@ export class Model {
 
             //テトリミノがボードの頂点に到達した場合ゲームオーバーの実行
             if(this.currentPiece.y == 0 && this.checkCollision()) {
-                this.gameOver = true;
-                this.notify(EVENTS.GAME_OVER, this.gameOver);
-                this.isGameRunning = false;
+                this.setState(GAME_STATES.GAME_OVER);
                 return;
             }
         }
@@ -327,11 +370,12 @@ export class Model {
     }
 
     togglePause(){
-        this.isPaused = !this.isPaused;
-        if(!this.isPaused){
+        if (this.state === GAME_STATES.PLAYING) {
+            this.setState(GAME_STATES.PAUSED);
+        } else if (this.state === GAME_STATES.PAUSED) {
+            this.setState(GAME_STATES.PLAYING);
             this.dropStart = Date.now();
             this.gameLoop();
         }
-        this.notify(EVENTS.IS_PAUSED, this.isPaused);
     }
 }

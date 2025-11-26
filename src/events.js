@@ -1,8 +1,14 @@
 export const EVENTS = {
-    SCORE_CHANGED: 'scoreChanged',
-    GAME_OVER: 'gameOver',
-    UPDATE_BOARD: 'updateBoard',
-    IS_PAUSED: 'isPaused',
-    NEXT_PIECE: 'nextPiece',
-    HOLD_PIECE: 'holdPiece'
+    SCORE_CHANGED: 'SCORE_CHANGED',
+    UPDATE_BOARD: 'UPDATE_BOARD',
+    NEXT_PIECE: 'NEXT_PIECE',
+    HOLD_PIECE: 'HOLD_PIECE',
+    STATE_CHANGED: 'STATE_CHANGED'
+};
+
+export const GAME_STATES = {
+    TITLE: 'TITLE',
+    PLAYING: 'PLAYING',
+    PAUSED: 'PAUSED',
+    GAME_OVER: 'GAME_OVER'
 };

@@ -1,4 +1,4 @@
-import { EVENTS } from "./events.js";
+import { EVENTS, GAME_STATES } from "./events.js";
 
 export class View2D {
 
@@ -24,24 +24,27 @@ export class View2D {
         this.nextCanvas = document.getElementById("nextCanvas");
         this.nextCtx = this.nextCanvas.getContext("2d");
 
-        // ★Bootstrapモーダルの初期化
+        this.titleScreen = document.getElementById('title-screen');
+        this.gameScreen = document.getElementById('game-screen');
+
+        this.score = document.getElementById('score');
+
+        // Bootstrapモーダルの初期化
         // （index2d.htmlで読み込んでいるBootstrapの機能を使います）
         this.pauseModal = new bootstrap.Modal(document.getElementById('pauseModal'));
         this.gameOverModal = new bootstrap.Modal(document.getElementById('gameOverModal'));
+        
         // イベントハンドラーの登録
         this.handlers = {
             [EVENTS.UPDATE_BOARD]: (data) => this.draw(data),
-            [EVENTS.GAME_OVER]:    () => this.gameOver(),
-            [EVENTS.SCORE_CHANGED]:(data) => console.log("Score:", data), // ここでHTMLの#scoreを書き換えてもOK
-            [EVENTS.IS_PAUSED]:    (data) => this.isPaused(data),
+            [EVENTS.SCORE_CHANGED]:(data) => this.scoreChanged(data),
             
             //drawMini関数にてホールドとネクストのミニミノを描画
             [EVENTS.NEXT_PIECE]:   (data) => this.drawMini(this.nextCtx, data),
-            [EVENTS.HOLD_PIECE]:   (data) => this.drawMini(this.holdCtx, data)
-            /*
-            [EVENTS.NEXT_PIECE]:   (data) => console.log(data),
-            [EVENTS.HOLD_PIECE]:   (data) => console.log(data)
-            */
+            [EVENTS.HOLD_PIECE]:   (data) => this.drawMini(this.holdCtx, data),
+
+            //描画する画面を判断するためのStateをModelから取得
+            [EVENTS.STATE_CHANGED]: ({ state, options }) => this.renderState(state, options)
         };
     }
 
@@ -79,57 +82,12 @@ export class View2D {
         this.ctx.strokeRect(px, py, this.BLOCK_SIZE, this.BLOCK_SIZE);
     }
 
-    // ゲームオーバー処理
-    gameOver(){
-        // 音楽停止
-        this.bgm.pause();
-        this.bgm.currentTime = 0;
-        
-        // アラートの代わりにモーダルを表示！
-        this.gameOverModal.show();
-    }
-
-    // ポーズ状態の切り替え（モーダル表示・BGM制御）
-    isPaused(isPaused){
-        if(isPaused){
-            this.bgm.pause();
-            this.pauseModal.show(); // モーダルを開く
-        } else {
-            this.bgm.play();
-            this.pauseModal.hide(); // モーダルを閉じる
-        }
-    }
-
-    // --- 画面切り替え用メソッド ---
-
-    // スタート画面を隠す
-    hideStartScreen(){
-        const titleScreen = document.getElementById('title-screen');
-        if(titleScreen){
-            titleScreen.classList.add('d-none');
-            titleScreen.classList.remove('d-flex');
-        }        
-    }
-
-    // ゲーム画面を表示する
-    showGameScreen(){
-        const gameScreen = document.getElementById('game-screen');
-        if(gameScreen){
-            gameScreen.classList.remove('d-none');
-            gameScreen.classList.add('d-flex');
-        }
-        // BGM開始
-        this.bgm.currentTime = 0;
-        this.bgm.play();
-    }
-
     //ミニ枠にホールドとネクストピースの描画
     drawMini(ctx, piece) {
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         if (!piece) return;
 
         const size = 20; 
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
         const pieceWidth  = piece.shape[0].length * size;
         const pieceHeight = piece.shape.length * size;
         const offsetX = (ctx.canvas.width - pieceWidth) / 2;
@@ -140,7 +98,6 @@ export class View2D {
                 if (value) {
                     ctx.fillStyle = piece.color;
                     ctx.fillRect(offsetX + x * size, offsetY + y * size, size, size);
-
                     ctx.strokeStyle = "black";
                     ctx.strokeRect(offsetX + x * size, offsetY + y * size, size, size);
                 }
@@ -148,26 +105,55 @@ export class View2D {
         });
     }
 
-    // タイトル画面に戻る（モーダルから呼ばれる）
-    showTitleScreen(){
-        const titleScreen = document.getElementById('title-screen');
-        const gameScreen = document.getElementById('game-screen');
-        
-        // モーダルを閉じる
-        this.pauseModal.hide();
+    scoreChanged(score){
+        this.score.innerText = score;
+    }
 
-        // 画面を切り替える
-        if(gameScreen) {
-            gameScreen.classList.add('d-none');
-            gameScreen.classList.remove('d-flex');
+    renderState(state, options = {}) {
+        this.resetScreens();
+
+        switch (state) {
+            case GAME_STATES.TITLE:
+                this.titleScreen.classList.remove('d-none');
+                this.titleScreen.classList.add('d-flex');
+                this.bgm.pause();
+                this.bgm.currentTime = 0;
+                break;
+
+            case GAME_STATES.PLAYING:
+                this.gameScreen.classList.remove('d-none');
+                this.gameScreen.classList.add('d-flex');
+                if (options.resetMusic) {
+                    this.bgm.currentTime = 0; 
+                    this.bgm.play();
+                } else {
+                    this.bgm.play();
+                }
+                break;
+
+            case GAME_STATES.PAUSED:
+                this.gameScreen.classList.remove('d-none');
+                this.gameScreen.classList.add('d-flex');
+                this.pauseModal.show();
+                this.bgm.pause();
+                break;
+
+            case GAME_STATES.GAME_OVER:
+                this.gameScreen.classList.remove('d-none');
+                this.gameScreen.classList.add('d-flex');
+                this.gameOverModal.show();
+                this.bgm.pause();
+                break;
         }
-        if(titleScreen){
-            titleScreen.classList.remove('d-none');
-            titleScreen.classList.add('d-flex');
-        }
-        
-        // BGM停止
-        this.bgm.pause();
-        this.bgm.currentTime = 0;
+    }
+
+    resetScreens() {
+        this.titleScreen.classList.add('d-none');
+        this.titleScreen.classList.remove('d-flex');
+        this.gameScreen.classList.add('d-none');
+        this.gameScreen.classList.remove('d-flex');
+
+        this.pauseModal.hide();
+        this.gameOverModal.hide();
     }
 }
