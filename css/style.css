@@ -47,3 +47,16 @@ canvas {
     height: auto;
     display: block;
 }
+
+/* キー操作表示の画面　*/
+.key-title {
+    font-size:10px;
+    color: white;
+}
+
+.key-item {
+    font-size:14px;
+    color: white;
+    line-height: 2.0;
+    margin-bottom: 6px;
+}

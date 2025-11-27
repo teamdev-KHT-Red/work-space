@@ -17,7 +17,7 @@
         <h1 class="game-title text-white fw-bold">TETRIS</h1>
         <div class="button-wrapper w-100 d-flex flex-column align-items-center gap-3">
             <button id="start-btn" class="menu-btn btn-start">スタート</button>
-            <button id="option-btn" class="menu-btn btn-option disabled">オプション</button>
+            <!--<button id="option-btn" class="menu-btn btn-option disabled">オプション</button>-->
         </div>
     </div>
 
@@ -59,6 +59,19 @@
                         <span id="level" class="d-block text-white h6 m-0">1</span>
                     </div> -->
                 </div>
+
+                <!---- 画面上に操作方法を表示　-->
+                <div class = "p-2 border border-secondary rounded bg-dark mt-5 text-start" style="width:200px;">
+                    <small class="key-title d-block mb-1">キー操作</small>
+
+                    <small class="key-item d-block mb-1">← :&nbsp;&nbsp;左移動</small>
+                    <small class="key-item d-block mb-1">→ :&nbsp;&nbsp;右移動</small>
+                    <small class="key-item d-block mb-1">↑ :&nbsp;&nbsp;回転</small>
+                    <small class="key-item d-block mb-1">↓ :&nbsp;&nbsp;ソフトドロップ</small>
+                    <small class="key-item d-block mb-1">Space :&nbsp;&nbsp;ハードドロップ</small>
+                    <small class="key-item d-block mb-1">Shift :&nbsp;&nbsp;ホールド</small>
+                    <small class="key-item d-block mb-1">Enter :&nbsp;&nbsp;一時停止</small>
+                </div>
             </div>
         </div>
     </div>
@@ -73,7 +86,7 @@
                 <div class="modal-body">
                     <div class="d-grid gap-3">
                         <button id="resume-btn" class="btn btn-success">ゲームに戻る</button>
-                        <button id="option-modal-btn" class="btn btn-secondary disabled">オプション</button>
+                        <!--<button id="option-modal-btn" class="btn btn-secondary disabled">オプション</button>-->
                         <button id="reset-btn" class="btn btn-secondary">リセット</button>
                         <button id="title-btn" class="btn btn-secondary">タイトルに戻る</button>
                     </div>
