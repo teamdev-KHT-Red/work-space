@@ -17,6 +17,7 @@ https://teamdev-kht-red.github.io/work-space/
 | **↑** | 回転 |
 | **↓** | ソフトドロップ |
 | **Space** | ハードドロップ |
+| **Shift** | ホールド |
 | **Enter** | 一時停止 / 再開 |
 
 <br>
